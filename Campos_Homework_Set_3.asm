@@ -2,14 +2,15 @@
 strMessage: .asciiz "I am a college student at SCCC"
 strPrmptInt: .asciiz "Please enter an integer: "
 strYouEntered: .asciiz "You entered: "
-strProcessNums: .asciiz "Processing integers..."
 strBothEven: .asciiz "Both numbers are even."
 strBothOdd: .asciiz "Both numbers are odd."
 strOddAndEven: .asciiz "One number is odd and one is even."
+strIsMultOf4: .asciiz "The number you entered is a multiple of 4!"
+strIsNotMultOf4: .asciiz "The number you entered is NOT a multiple of 4!"
 newLn: .asciiz "\n"
 var1: .word 32	# Not sure why I have to set a number after .word
-var2: .word 10		# For comparison
-var3: .word 33		# For comparison
+var2: .word 10	# For comparison
+var3: .word 33	# For comparison
 
 .text
 main:	# Question 1 (1)
@@ -93,20 +94,16 @@ prnt_Var3_Then_Var2:
 	j cont_Program_1
 
 cont_Program_1:
+	li $v0, 4
+	la $a0, newLn
+	syscall
+	
 	# Question 3
 	jal ask_For_Int
 	move $s0, $v0	# Move entered integer into s0
 
 	jal ask_For_Int
 	move $s1, $v0	# Move entered integer into s1
-	
-	li $v0, 4	# Print strProcessNums
-	la $a0, strProcessNums
-	syscall
-	
-	li $v0, 4	# Print new line
-	la $a0, newLn
-	syscall
 	
 	move $a0, $s0	# Move s0 value to argument
 	jal is_Int_Even
@@ -159,12 +156,22 @@ prnt_Nums_Odd_And_Even:
 	j cont_Program_2
 	
 cont_Program_2:
-	# Question 4
+	li $v0, 4	# Print new line
+	la $a0, newLn
+	syscall
 	
+	# Question 4
+	# How would I check my computer if big or little endian?
+	
+	# Question 5
+	jal ask_For_Int
+	move $a0, $v0	# move value of v0 to a0
+	jal is_Mult_Of_Four
+	move $a0, $v0	# move value of v0 to a0
+	jal display_Result_If_Mult_Of_4
 	
 terminate:
-	# Terminate Program
-	li $v0, 10
+	li $v0, 10	# Terminate Program
 	syscall
 
 ask_For_Int:
@@ -175,13 +182,38 @@ ask_For_Int:
 	li $v0, 5	# Read integer
 	syscall
 	
+	# Entered integer is already stored in v0
 	jr $ra
 
 is_Int_Even:
 	# Take the arugment register and shift it right and left once
 	# and store the result in a temp register for comparison.
 	# Compare the arg. and temp. reg to each other and store in return register.
-	srl $v0, $a0, 1
-	sll $v0, $v0, 1
+	srl $v0, $a0, 1	# v0 = a0 >> 1
+	sll $v0, $v0, 1	# v0 = v0 << 1
 	seq $v0, $a0, $v0	# If a0 == v0 then v0 = 1
+	jr $ra
+
+is_Mult_Of_Four:
+	# Use AND to see if argument is a multiple of four
+	# If v0 equals 0, then the arugment is a mutiple of four
+	# Else, the argument is NOT a multiple of four
+	and $v0, $a0, 3
+	jr $ra
+	
+display_Result_If_Mult_Of_4:
+	move $t0, $a0	# move value of argument to t0
+	beqz $t0, prnt_Is_Mult_Of_4
+	j prnt_Is_Not_Mult_Of_4
+prnt_Is_Mult_Of_4:
+	li $v0, 4
+	la $a0, strIsMultOf4
+	syscall
+	j display_Result_If_Mult_Of_4_Return
+prnt_Is_Not_Mult_Of_4:
+	li $v0, 4
+	la $a0, strIsNotMultOf4
+	syscall
+	j display_Result_If_Mult_Of_4_Return
+display_Result_If_Mult_Of_4_Return:
 	jr $ra
