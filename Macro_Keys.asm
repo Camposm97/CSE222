@@ -1,3 +1,15 @@
+.macro printStr(%str)	# Very powerful
+	.data
+	myLabel: .asciiz %str
+	.text
+	prntStr(myLabel)
+.end_macro
+
+.macro printlnStr(%str)	# Too powerful
+	printStr(%str)
+	prntln()
+.end_macro
+
 .macro prntStr(%str)
 	li $v0, 4
 	la $a0, %str
