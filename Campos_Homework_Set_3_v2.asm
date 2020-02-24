@@ -51,11 +51,11 @@ main:
 	# Look up how to check if computer is big or little endian
 	
 	# Question 5
-	jal askForInt
-	move $a0, $v0	# Move return value to a0
-	jal isMultOfFour
-	move $a0, $v0	# Move return value to a0
-	jal displayResultIfMultOf4	
+	jal askForInt		# Ask user for integer
+	move $a0, $v0		# Move return value to a0
+	jal isMultOfFour		# Check if integer is a multiple of four
+	move $a0, $v0		# Move return value to a0
+	jal displayResultIfMultOf4	# Print results	
 
 terminate:
 	li $v0 10
@@ -98,7 +98,7 @@ isEvenInt:	# Takes one argument (a0)
 	seq $v0, $a0, $t9	# If a0 == t0 then v0 = 1
 	jr $ra
 	
-displayQuestion3:
+displayQuestion3:	# ANSWER FOR QUESTION #3 BEGINS HERE
 	sub $sp $sp 4
 	sw $ra 0($sp)
 	
@@ -131,9 +131,9 @@ prntNumsOneOddAndEven:
 	println("One number is odd and one is even.")
 	j displayQuestion3Return
 	
-displayQuestion3Return:
+displayQuestion3Return:	
 	lw $ra 0($sp)
-	jr $ra
+	jr $ra			# ANSWER FOR QUESTION #3 ENDS HERE
 	
 isMultOfFour:
 	# Use AND to see if argument is a multiple of four
@@ -143,18 +143,14 @@ isMultOfFour:
 	jr $ra
 	
 displayResultIfMultOf4:
-	move $t0, $a0	# move value of argument to t0
+	move $t0, $a0	# Move value of argument to t0
 	beqz $t0, prntIsMultOf4
 	j prntIsNotMultOf4
 prntIsMultOf4:
-	li $v0, 4
-	la $a0, strIsMultOf4
-	syscall
-	j displayResultIf_Mult_Of_4_Return
+	println("The number you entered is a multiple of 4!")
+	j displayResultIfMultOf4Return
 prntIsNotMultOf4:
-	li $v0, 4
-	la $a0, strIsNotMultOf4
-	syscall
+	println("The number you entered is NOT a multiple of 4!")
 	j displayResultIfMultOf4Return
 displayResultIfMultOf4Return:
 	jr $ra
