@@ -32,14 +32,30 @@ var3: .word 43
 
 .text
 main:
+	# Question 1 (1)
 	println("I am a college student at SCCC")
+	
+	# Question 1 (2)
 	jal askForInt
 	sw $v0 var1
+	
+	# Question 2
 	lw $a0 var2
 	lw $a1 var3
 	jal compareTwoInts
+	
+	# Question 3
 	jal displayQuestion3
-		
+	
+	# Question 4
+	# Look up how to check if computer is big or little endian
+	
+	# Question 5
+	jal askForInt
+	move $a0, $v0	# Move return value to a0
+	jal isMultOfFour
+	move $a0, $v0	# Move return value to a0
+	jal displayResultIfMultOf4	
 
 terminate:
 	li $v0 10
@@ -117,4 +133,28 @@ prntNumsOneOddAndEven:
 	
 displayQuestion3Return:
 	lw $ra 0($sp)
+	jr $ra
+	
+isMultOfFour:
+	# Use AND to see if argument is a multiple of four
+	# If v0 equals 0, then the arugment is a mutiple of four
+	# Else, the argument is NOT a multiple of four
+	and $v0, $a0, 3
+	jr $ra
+	
+displayResultIfMultOf4:
+	move $t0, $a0	# move value of argument to t0
+	beqz $t0, prntIsMultOf4
+	j prntIsNotMultOf4
+prntIsMultOf4:
+	li $v0, 4
+	la $a0, strIsMultOf4
+	syscall
+	j displayResultIf_Mult_Of_4_Return
+prntIsNotMultOf4:
+	li $v0, 4
+	la $a0, strIsNotMultOf4
+	syscall
+	j displayResultIfMultOf4Return
+displayResultIfMultOf4Return:
 	jr $ra
