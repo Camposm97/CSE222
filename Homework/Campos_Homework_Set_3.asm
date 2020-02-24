@@ -1,23 +1,23 @@
-.macro prnt(%str)
+.macro prntStr(%str)
 	li $v0 4
 	la $a0 %str
 	syscall
 .end_macro
-.macro prntln(%str)
-	prnt(%str)
-	prnt(newLine)
+.macro prntlnStr(%str)
+	prntStr(%str)
+	prntStr(newLine)
 .end_macro
 .macro print(%str)
 	.data
 	str: .asciiz %str
 	.text
-	prnt(str)
+	prntStr(str)
 .end_macro
 .macro println(%str)
 	.data
 	str: .asciiz %str
 	.text
-	prntln(str)
+	prntlnStr(str)
 .end_macro
 .macro prntInt()
 	li $v0 1
@@ -45,7 +45,7 @@ main:
 	jal compareTwoInts
 	
 	# Question 3
-	jal displayQuestion3
+	jal showQuestion3
 	
 	# Question 4
 	# Look up how to check if computer is big or little endian
@@ -55,7 +55,7 @@ main:
 	move $a0, $v0		# Move return value to a0
 	jal isMultOfFour		# Check if integer is a multiple of four
 	move $a0, $v0		# Move return value to a0
-	jal displayResultIfMultOf4	# Print results	
+	jal showResultIfMultOf4	# Print results	
 
 terminate:
 	li $v0 10
@@ -89,7 +89,7 @@ prntWay2:	# Print a1 then a0
 	j compareTwoIntsReturn
 
 compareTwoIntsReturn:
-	prntln(newLine)
+	prntlnStr(newLine)
 	jr $ra
 
 isEvenInt:	# Takes one argument (a0)
@@ -98,7 +98,7 @@ isEvenInt:	# Takes one argument (a0)
 	seq $v0, $a0, $t9	# If a0 == t0 then v0 = 1
 	jr $ra
 	
-displayQuestion3:	# ANSWER FOR QUESTION #3 BEGINS HERE
+showQuestion3:	# ANSWER FOR QUESTION #3 BEGINS HERE
 	sub $sp $sp 4
 	sw $ra 0($sp)
 	
@@ -121,17 +121,17 @@ displayQuestion3:	# ANSWER FOR QUESTION #3 BEGINS HERE
 	
 prntNumsBothOdd:
 	println("Both numbers are odd.")
-	j displayQuestion3Return
+	j showQuestion3Return
 	
 prntNumsBothEven:
 	println("Both numbers are even.")
-	j displayQuestion3Return
+	j showQuestion3Return
 	
 prntNumsOneOddAndEven:
 	println("One number is odd and one is even.")
-	j displayQuestion3Return
+	j showQuestion3Return
 	
-displayQuestion3Return:	
+showQuestion3Return:	
 	lw $ra 0($sp)
 	jr $ra			# ANSWER FOR QUESTION #3 ENDS HERE
 	
@@ -142,15 +142,15 @@ isMultOfFour:
 	and $v0, $a0, 3
 	jr $ra
 	
-displayResultIfMultOf4:
+showResultIfMultOf4:
 	move $t0, $a0	# Move value of argument to t0
 	beqz $t0, prntIsMultOf4
 	j prntIsNotMultOf4
 prntIsMultOf4:
 	println("The number you entered is a multiple of 4!")
-	j displayResultIfMultOf4Return
+	j showResultIfMultOf4Return
 prntIsNotMultOf4:
 	println("The number you entered is NOT a multiple of 4!")
-	j displayResultIfMultOf4Return
-displayResultIfMultOf4Return:
+	j showResultIfMultOf4Return
+showResultIfMultOf4Return:
 	jr $ra
