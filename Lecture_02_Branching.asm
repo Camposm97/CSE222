@@ -1,6 +1,3 @@
-.macro println(%str)
-	
-.end_macro
 .data
 	var1: .word 3
 	var2: .word 7
