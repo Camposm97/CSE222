@@ -49,6 +49,11 @@ main:
 	
 	# Question 4
 	# Look up how to check if computer is big or little endian
+	li $v0 34
+	lw $a0 var1
+	syscall
+	
+	prntStr(newLine)
 	
 	# Question 5
 	jal askForInt		# Ask user for integer
@@ -89,7 +94,7 @@ prntWay2:	# Print a1 then a0
 	j compareTwoIntsReturn
 
 compareTwoIntsReturn:
-	prntlnStr(newLine)
+	prntStr(newLine)
 	jr $ra
 
 isEvenInt:	# Takes one argument (a0)
