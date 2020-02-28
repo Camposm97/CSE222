@@ -46,9 +46,10 @@ main:
 	
 	# Question 3
 	jal showQuestion3
+	addi $sp $sp 4
 	
 	# Question 4
-	# Look up how to check if computer is big or little endian
+	# On my computer when I print var1 it is displayed as big endian.  
 	li $v0 34
 	lw $a0 var1
 	syscall
@@ -66,7 +67,7 @@ terminate:
 	li $v0 10
 	syscall
 
-askForInt:	# No arugmented needed
+askForInt:	# No argument needed
 	print("Please enter an integer: ")
 	li $v0 5
 	syscall

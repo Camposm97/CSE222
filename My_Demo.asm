@@ -11,9 +11,9 @@ main:
 	prntlnInt(num)
 	printlnStr("What's your name?")
 	
-	li $v0, 8	# Read String
+	li $v0, 8		# Read String
 	la $a0, name	# a0 = name
-	li $a1, 20	# a1 = 20 
+	li $a1, 20		# a1 = 20, the user can only enter a max of 20 characters
 	syscall
 
 	printlnStr("How old are you?")
