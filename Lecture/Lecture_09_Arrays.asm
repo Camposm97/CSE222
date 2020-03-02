@@ -75,12 +75,24 @@ cont_3:
 	syscall
 
 display_Average:
-	li $v0 4
+	li $v0 4		# Print average message
 	la $a0 msg_avg
 	syscall
 	
-	div $t1 $s1
+	div $t1 $s1		# Divide sum of array by size of array
+
+	mflo $t0		# Move result (32 bits before decimal) to t0
 	
+	li $v0 1	# Print average
+	move $a0 $t0
+	syscall
+	
+find_Max_Int:
+	
+
+find_Min_Int:
+	
+
 exit:
 	li $v0 10
 	syscall
