@@ -3,6 +3,9 @@ arr1: .space 40
 asize: .word 10
 arr2: .word 1, 3, 5, 7, 9
 space: .asciiz " "
+newLine: .asciiz "\n"
+msg_sum: .asciiz "The sum of the array is "
+msg_avg: .asciiz "The average of the array is "
 
 .text
 main:
@@ -13,7 +16,7 @@ main:
 	
 loop_1:
 	li $v0 42	# Generate random number
-	li $a1 100	# Set upper bound to 100
+	li $a1 10	# Set upper bound to 10
 	syscall
 	
 	move $t2 $a0		# t2 = a0 (random number)
@@ -46,9 +49,38 @@ cont_2:
 	li $t0 0	# t0 is my counter
 	li $t1 0	# t1 is my sum
 	la $s0 arr1	# load address of arr1 into s0
-find_Average:
+	lw $s1 asize	# load size of array into s1
+find_Sum:
+	lw $t2 0($s0)	# load integer from array
+	add $t1 $t1 $t2	# t2 = t2 + t1 (sum array)
+	addi $t0 $t0 1	# t0 = t0 + 1
+	beq $t0 $s1 cont_3	# If t0 == s1 jump out of loop
+	addi $s0 $s0 4	# move to next cell in array
+	j find_Sum
+cont_3:
+	li $v0 4	# Print new line
+	la $a0 newLine
+	syscall
 	
+	li $v0 4	# Print sum message
+	la $a0 msg_sum
+	syscall
+	
+	li $v0 1	# Print sum of array
+	move $a0 $t1	
+	syscall
+	
+	li $v0 4	# Print new line
+	la $a0 newLine
+	syscall
 
+display_Average:
+	li $v0 4
+	la $a0 msg_avg
+	syscall
+	
+	div $t1 $s1
+	
 exit:
 	li $v0 10
 	syscall
