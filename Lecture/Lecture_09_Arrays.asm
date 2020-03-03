@@ -86,12 +86,30 @@ display_Average:
 	li $v0 1	# Print average
 	move $a0 $t0
 	syscall
+
+question_3_part_1:
+	li $t0 0		# t0 = 0
+	lw $s0 asize		# s0 = size of array
+	la $s1 arr1		# load address of arr1 into s1
+	li $t1 0($s1)	# t1 is my max number
 	
 find_Max_Int:
-	
+	beq $t0 $s0 cont_4	# If t0 == s0, jump to cont_4
+j find_Max_Int
 
+cont_4:	# Print max number in array
+
+question_4_part_2
+	li $t0 0		# t0 = 0
+	lw $s0 asize		# s0 = size of array
+	la $s1 arr1		# load address of arr1 into s1
+	li $t1 0($s1)	# t1 is my min number
 find_Min_Int:
+	beq $t0 $s0 cont_5
 	
+j find_Max_Int
+
+cont_5:	# Print min number in array
 
 exit:
 	li $v0 10
