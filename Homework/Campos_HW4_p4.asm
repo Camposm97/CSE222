@@ -23,6 +23,7 @@ main:
 	la $s0 arr		# Re-load the address of the array
 	li $t0 0		# t0 = 0	(counter)
 	li $t2 0		# t2 = 0	(line counter)
+	
 display_Arr:			# Display array
 	beq $t0 $s1 exit	# If t0 == arrSize, jump to exit
 	lw $t1 0($s0)	# Read integer from array	
@@ -32,12 +33,12 @@ display_Arr:			# Display array
 	addi $t2 $t2 1	# t1 = t1 + 1
 	addi $s0 $s0	 4	# Move to next cell
 	
-	beq $t2 5 resetLnCount
-	prntStr(spce)	# Print space
+	beq $t2 5 resetLnCount	# If t2 == 5, then t2 = 0 and print new line
+	prntStr(spce)		# Print space
 	j display_Arr
 resetLnCount:
-	li $t2 0
-	prntStr(newLine)
+	li $t2 0			# Reset t2 = 0
+	prntStr(newLine)		# Print new line
 	j display_Arr
 
 exit:
