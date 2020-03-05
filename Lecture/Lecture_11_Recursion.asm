@@ -1,4 +1,4 @@
-.text
+.text	# LOOK AT THIS LATER!!!!!!!!!!!!!!!!!!!!!!
 main:
 	li $a0 4		# a0 = 4
 	jal factorial	# Call factorial function
