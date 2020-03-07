@@ -1,8 +1,13 @@
+.macro prntStr(%str)
+	li $v0 4
+	la $a0 %str
+	syscall
+.end_macro
 .data
 arr: .space 80  # Create array with size of 20
 arrSize: .word 20
 newLine: .asciiz "\n"
-space: .asciiz " "
+tab: .asciiz "\t"
 .text
 main:
     	la $a0 arr         # Load address of arr into a0
@@ -17,24 +22,20 @@ main:
     	mflo $t1		# Move quotient to t1
 loop_1:
 	beq $t0 $s1 terminate	# If t0 == s1, exit loop
-	beq $t0 $t1 prntln	# If t0 == t1, print new line
 	lw $s2 0($s0)		# Load integer from array and store in s2
 	
-	li $v0 1
+	li $v0 1			# Print integer value in s2
 	move $a0 $s2
 	syscall
 	
-	li $v0 4
-	la $a0 space
-	syscall
+	prntStr(tab)
 	
 	addi $t0 $t0 1		# Increment counter
 	addi $s0 $s0 4		# Move to next cell of the array
+	beq $t0 $t1 prntln	# If t0 == t1, then print new line
 	j loop_1
 prntln:
-	li $v0 4
-	la $a0 newLine
-	syscall
+	prntStr(newLine)
 	j loop_1
 
 terminate:
@@ -56,8 +57,8 @@ arr_Loop:
 	beq $t0 $s1 arr_Loop_Done	# If t0 == s1, exit loop
     	sw $t2 0($s0)			# Save num2 to array
     	add $t3 $t1 $t2			# sum = num1 + num2
-    	move $t1 $t2				# num1 = num2
-    	move $t2 $t3				# num2 = sum
+    	move $t1 $t2			# num1 = num2
+    	move $t2 $t3			# num2 = sum
     	addi $t0 $t0 1			# Increment counter
     	addi $s0 $s0 4			# Move to next cell in the array
     	j arr_Loop
