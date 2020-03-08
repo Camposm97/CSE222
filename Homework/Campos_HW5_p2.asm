@@ -1,12 +1,17 @@
 .data
 arr: .word 5, 10, 7, 15, 117, 0, 444, 7, 23, 12	# Total = 640
 arrSize: .word 10
+strAvg: .asciiz "The average of this array is "
 .text
 main:
 	la $a0 arr				# Load a0 with address of array
 	lw $a1 arrSize			# Load a1 with size of array
 	jal funct_Compute_Arr_Avg
 	move $t0 $v0			# Move result to t0 (average)
+	
+	li $v0 4
+	la $a0 strAvg
+	syscall
 	
 	li $v0 1				# Print average (should be 64)
 	move $a0 $t0

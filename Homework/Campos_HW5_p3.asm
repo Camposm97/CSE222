@@ -5,9 +5,9 @@
 .end_macro
 .data
 promptPosInt: .asciiz "Please enter a positive integer: "
-youEntered: .asciiz "You entered: "
+youEntered: .asciiz "You entered "
 newLine: .asciiz "\n"
-sumIs: .asciiz "The sum is: "
+sumIs: .asciiz "The sum is "
 .text
 main:
 	prntStr(promptPosInt)

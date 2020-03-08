@@ -1,9 +1,11 @@
 .data
-prmptInt: .asciiz "Please enter an integer: "
+strPrmptInt: .asciiz "Please enter an integer: "
+strOnes: .asciiz "Number of ones: "
+newLine: .asciiz "\n"
 .text
 main:
 	li $v0 4
-	la $a0 prmptInt
+	la $a0 strPrmptInt
 	syscall
 	
 	li $v0 5
@@ -13,8 +15,16 @@ main:
 	jal funct_Count_Ones
 	move $t0 $v0	# Move result to t0
 	
+	li $v0 4
+	la $a0 strOnes
+	syscall
+	
 	li $v0 1		# Print result
 	move $a0 $t0
+	syscall
+	
+	li $v0 4
+	la $a0 newLine
 	syscall
 terminate:
 	li $v0 10
@@ -34,7 +44,7 @@ foundOne:
 	addi $s7 $s7 1		# Increment counter
 cont_Loop:
 	mflo $s0			# s0 = quotient
-	bgt $s0 0 loop_1		# If s0 > t0, jump to loop	
+	bgt $s0 $0 loop_1		# If s0 > 0, loop again
 	
 	move $v0 $s7		# v0 = result (counter)
 	jr $ra
