@@ -17,7 +17,7 @@
 	prntln()
 .end_macro
 .text
-# The way a function works (at least to my understadning) is that when you call it using "jal" 
+# The way a function works (at least to my understanding) is that when you call it using "jal" 
 # MIPS will save where the program called the function in the register $ra then run the code 
 # inside the function.  
 #
@@ -35,7 +35,7 @@ functionA:
 # The reason I substracted 12 from stack pointer is because I need to make space to save the 
 # return addresses once the functions are all done and can return to their caller, thus back
 # to the main method of the program.
-	sw $ra 0($sp)			# Save word ($ra) to $sp[0] - $sp[3] since the word is 32 bits
+	sw $ra 0($sp)			# Save word ($ra) to $sp[0] - $sp[3] since a word is 32 bits
 	println("Function A")		# Print a string proving we're in function A
 	jal functionB			# Call function B, save return address to $ra
 	println("Goodbye Function A")	# Print a string proving we're back in function A after calling function B

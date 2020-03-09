@@ -17,7 +17,7 @@ arr: .space 40
 arrSize: .word 10
 prmptLower: .asciiz "Please set the lower bound: "
 prmptUpper: .asciiz "Please set the upper bound: "
-space: .asciiz " "
+space: .asciiz "\t"
 newLine: .asciiz "\n"
 .text
 main:
