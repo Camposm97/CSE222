@@ -1,7 +1,7 @@
 .data
 arr1: .word 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-size: .word 10
 arr2: .space 40
+size: .word 10
 tab: .asciiz "\t"
 .text
 main:
@@ -12,7 +12,7 @@ main:
 	li $t1 0		# Set t1 = 0
 	
 loop_Reverse:
-	beq $t0 $s2 display_Reverse	# If t0 == 0, then jump to done
+	beq $t0 $s2 contProgram	# If t0 == 0, then jump to done
 	lw $t1 0($s0)		# Load number from array
 	sw $t1 0($s1)		# Save number to array2
 	
@@ -21,38 +21,37 @@ loop_Reverse:
 	addi $s1 $s1 4		# Move to next cell (forwards)
 	j loop_Reverse
 
-display_Reverse:
-	li $t0 0	# Set t0 = 0 (i)
-	li $t1 0	# Set t1 = 0 (placeholder)
-	la $s0 arr2	# Load address of arr2 into s0
-	lw $s1 size	# Load size into s1
-loop_Display:
-	beq $t0 $s1 done	# If t0 == size, jump to done
-	lw $t1 0($s0)	# Read int from array
-	
-	li $v0 1		# Print integer
-	move $a0 $t1
-	syscall
-	
-	li $v0 4		# Print tab
-	la $a0 tab
-	syscall
-	
-	addi $t0 $t0 1	# Increment i
-	addi $s0 $s0 4	# Move to next cell
-	j loop_Display
-
+contProgram:
+	la $a0 arr2
+	lw $a1 size
+	jal functDisplayArr
 done:
 	li $v0 10
 	syscall
 	
+# Takes in 3 arguments (parameters) where
+# a0 = arr1 (the array that we're going to reverse)
+# a1 = arr2 (the array we're going to store the numbers in reverse from arr1)
+# a2 = size (the size of the array)
+functReverseArr:
+	
 functDisplayArr:
 	move $s0 $a0		# s0 = address of array
-	move $s1 $a2		# s1 = size of array
+	move $s1 $a1		# s1 = size of array
 	li $t0 0			# Set t0 = 0 (counter)
 loopDisplay:
-	beq $t0 $s1 done
+	beq $t0 $s1 displayArrDone
+	lw $a0 0($s0)
 	
-loopDisplayDone:
+	li $v0 1
+	syscall
 	
+	li $v0 4
+	la $a0 tab
+	syscall
+	
+	addi $t0 $t0 1
+	addi $s0 $s0 4
+	j loopDisplay
+displayArrDone:
 	jr $ra
