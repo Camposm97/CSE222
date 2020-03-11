@@ -2,6 +2,7 @@
 arr1: .word 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 arr2: .space 40
 size: .word 10
+newLine: .asciiz "\n"
 tab: .asciiz "\t"
 comma: .asciiz ", "
 .text
@@ -14,6 +15,13 @@ main:
 	la $a0 arr2
 	lw $a1 size
 	jal functDisplayArrWithCommas
+	
+	la $a0 arr2
+	lw $a1 size
+	jal functSumArr
+	move $a0 $v0
+	li $v0 1
+	syscall
 done:
 	li $v0 10
 	syscall
@@ -50,15 +58,15 @@ loopDisplay:
 	beq $t0 $s1 displayArrDone
 	lw $a0 0($s0)
 	
-	li $v0 1
+	li $v0 1	# Print integer
 	syscall
 	
-	li $v0 4
+	li $v0 4	# Print tab
 	la $a0 tab
 	syscall
 	
-	addi $t0 $t0 1
-	addi $s0 $s0 4
+	addi $t0 $t0 1	# Increment i
+	addi $s0 $s0 4	# Move to the next cell in the array
 	j loopDisplay
 displayArrDone:
 	jr $ra
@@ -86,4 +94,24 @@ skipComma:
 	addi $s0 $s0 4	# Move to next cell of the array
 	j commaLoop
 commaLoopDone:
+	li $v0 4		# Print new line
+	la $a0 newLine
+	syscall
+	jr $ra
+
+# a0 = array
+# a1 = size of array
+# Iterate through the array and add all
+# the integers and return it
+functSumArr:
+	li $t0 0	# Set t0 = 0 (counter)
+	li $v0 0	# Set v0 = 0 (sum)
+sumLoop:
+	beq $t0 $a1 sumDone 	# If t0 == size, then jump
+	lw $t1 0($a0)		# Load integer from array into t1
+	add $v0 $v0 $t1		# sum = sum + t1
+	addi $t0 $t0 1		# Increment i
+	addi $a0 $a0 4		# Move to the next cell in the array
+	j sumLoop
+sumDone:
 	jr $ra
