@@ -37,11 +37,11 @@ main:
 	
 	# Question 1 (2)
 	jal askForInt
-	sw $v0 var1
+	sw $v0 var1		# Save value inside v0 into var1 (var1 = v0)
 	
 	# Question 2
-	lw $a0 var2
-	lw $a1 var3
+	lw $a0 var2		# Load value inside var2 to a0 (a0 = var2) 
+	lw $a1 var3		# a1 = var3
 	jal compareTwoInts
 	
 	# Question 3
