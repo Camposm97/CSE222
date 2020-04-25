@@ -2,7 +2,7 @@
 .data
 binArr: .space 32		# 32 bytes = 32 characters
 binArrSize: .word 32
-strPrmptSignMagNum: .asciiz "Please enter a sign/magnitude binary number (32 bits): "
+strPrmptSignMagNum: .asciiz "Please enter a sign/magnitude binary number (32-Bit): "
 newLine: .asciiz "\n"
 space: .asciiz " "
 
@@ -16,21 +16,22 @@ space: .asciiz " "
 #	if it is a 1 or 0, if not then stop reading the string.  If the character is a 1 or 0, then save the
 #	character to the char array (memory).  
 #
-#
 .text
 main:
+	jal fillBinArr
 	prntStr(strPrmptSignMagNum)
 	prmptStr(33)		# Prompt string (limit is 33 characters)
+	
 	move $s0 $a0		# s0 = entered string
 	prntStr(newLine)
 	move $a0 $s0		# a0 = s0
 	jal readSignMagnitudeBinStr
 	prntStr(newLine)
-	la $a0 binArr
-	lw $a1 binArrSize
-	jal displayCharArr
 # Exit Program
 terminate:
+	jal displayBinArr
+	jal isBinNegInSignMag
+	prntStr(newLine)
 	li $v0 10
 	syscall
 
@@ -55,7 +56,7 @@ readStrLoop:
 	
 	sb $a0 0($s1)			# Save character to binArr
 	prntChar($a0)
-	prntStr(space)
+	#prntStr(space)
 	
 	addi $t0 $t0 1	# Increment counter
 	addi $s0 $s0 1	# Move ot the next cell in the array
@@ -74,20 +75,46 @@ isBinNum:
 	loadAddr()
 	jr $ra
 
-# Prints char array in on one line
-# a0 = array
-# a1 = size of array
-displayCharArr:
+# Fills binArr with zeros
+fillBinArr:
 	saveAddr()
-	move $s0 $a0
-	move $s1 $a1
-	li $t0 0
+	la $s0 binArr
+	lw $s1 binArrSize
+	li $t0 0	# t0 = counter
+	li $t1 48	# t1 = 48
+fillLoop:
+	sb $t1 0($s0)
+	addi $t0 $t0 1	# Increment counter
+	addi $s0 $s0 1	# Move to next cell
+	bne $t0 $s1 fillLoop
+	loadAddr()
+	jr $ra
+
+# Checks if binary number (binArr) is negative in sign/magnitude format
+isBinNegInSignMag:
+	saveAddr()
+	la $s0 binArr
+	lw $s1 binArrSize
+	addi $s1 $s1 -1
+	add $s0 $s0 $s1	# Move to last cell of array
+	lb $a0 0($s0)
+	prntChar($a0)
+	loadAddr()
+	jr $ra
+	
+# Prints binArr on one line
+displayBinArr:
+	saveAddr()
+	la $s0 binArr
+	lw $s1 binArrSize	# counter
+	#add $s0 $s0 $s1
+	#addi $s0 $s0 -1
 displayLoop:
 	lb $a0 0($s0)	# Read character from array
 	prntChar($a0)
 	addi $s0 $s0 1	# Move to next cell
-	addi $t0 $t0 1	# Increment counter
-	bne $t0 $s1 displayLoop
+	addi $s1 $s1 -1	# Decrement counter
+	bnez $s1 displayLoop
 	prntStr(newLine)
 	loadAddr()
 	jr $ra
