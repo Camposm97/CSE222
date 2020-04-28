@@ -37,8 +37,8 @@ terminate:
 
 # =====================================[FUNCTIONS BELOW]=====================================
 
-# Reads the entered string that should be in sign/magnitude format
-# Stores string in binArr
+# Reads the entered string (sign/mag binary number)
+# Stores string in binArr, if string isn't all 1s or 0s then the method will returns a 0
 # a0 = entered string
 readSignMagnitudeBinStr:
 	saveAddr()
