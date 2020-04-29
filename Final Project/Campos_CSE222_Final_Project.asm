@@ -85,64 +85,59 @@ doneValidBinLoop:
 	jr $ra
 
 
+
 # Takes a0 (binary string) and converts it to base 10 format
+# a1 = length of string
 convertToDecimal:
 	saveAddr()
-	move $s0 $a0	# s0 = string
-	move $s1 $a1	# s1 = string length
-	li $s2 0		# Sum
+	move $s0 $a0	# Store string in s0
+	move $s1 $a1	# Store length of string in s1
+	addi $s1 $s1 -1	# Decrement length of string by 1 (So we avoid the NUL char)
+	li $s2 0		# This will hold the sum for computing value of the binary number in decimal
+	li $s3 30		# Bit Counter
 	li $t0 0		# Counter
+	li $t1 0		# For storing read chars
+	li $t2 1		# Most significant bit (msb = -1 or 1)
+	li $t3 1		# t3 = 1 (For shifting)
+
+	jal isNegNum
+	addi $s0 $s0 1	# Next char
+	addi $t0 $t0 1	# Increment counter
+	bnez $v0 isNegative
+	j iterate
+isNegative:
+	li $t2 -1
 iterate:
 	beq $t0 $s1 doneIterate
 	lb $t1 0($s0)	# Read char
-	move $a0 $t1
-	jal isSpaceChar
-	bnez $v0 contIterate
-	#prntChar($t1)
-	#prntStr(space)
+	move $a0 $t1	# Move char to a0
+	jal isSpaceChar	# Is space char?
+	bnez $v0 contIterate	# If true, then 
+	addi $t1 $t1 -48	# Parse bit char to integer
+	#sub $t4 $s1 $t0	# t4 = s1 - t0
+	sllv $t4 $t3 $s3	# t4 = t3 << s3
+	
+	prntInt($t1)	# Print parsed int
+	prntStr(" * ")
+	prntlnInt($t4)	# Print power
+	
+	mult $t1 $t4	# LO = t1 * t4
+	mflo $t4		# t4 = LO
+	add $s2 $s2 $t4	# sum = sum + t4
+	addi $s3 $s3 -1	# Decrement bit counter
 contIterate:
 	addi $s0 $s0 1	# Next char
 	addi $t0 $t0 1	# Increment counter
 	j iterate
-	
 doneIterate:	
 	prntStr(newLine)
+	mult $t2 $s2
+	mflo $s2
+	prntlnInt($s2)
+	move $v0 $s2
 	loadAddr()
 	jr $ra
 
-
-
-# Reads the entered string (sign/mag binary number)
-# Stores string in strBinNum, if string isn't all 1s or 0s then the function will return a 0
-# a0 = entered string
-readBinStr:
-	saveAddr()
-	move $s0 $a0	# s0 = entered string
-	la $s1 strBinNum	# Load address of strBinNum
-	lw $s2 strBinNumSize	# Load size of strBinNum
-	li $t0 0		# t0 = 0 (counter)
-readStrLoop:
-	beq $t0 $s2 doneReadStr	# If t0 == s2, then jump
-	
-	lb $a0 0($s0)		# load character from string into t1
-	
-	jal isBinChar
-	beqz $v0 doneReadStr	# If v0 == 0, then jump to done
-	
-	sb $a0 0($s1)		# Save character to strBinNum
-	prntChar($a0)
-	#prntStr(space)
-	
-	addi $t0 $t0 1	# Increment counter
-	addi $s0 $s0 1	# Move to next cell in the array
-	addi $s1 $s1 1	# Move to next cell of the strBinNum
-	j readStrLoop
-doneReadStr:
-	prntStr(newLine)
-	# If t0 == s2, then v0 = 1: means the program read all 32 chaaracters that are 1s and 0s
-	seq $v0 $t0 $s2		
-	loadAddr()
-	jr $ra
 
 
 
@@ -166,49 +161,11 @@ isSpaceChar:
 	loadAddr()
 	jr $ra
 
-
-
-# Fills strBinNum with zeros
-#fillBinArr:
-#	saveAddr()
-#	la $s0 strBinNum
-#	lw $s1 strBinNumSize
-#	li $t0 0	# t0 = counter
-#	li $t1 48	# t1 = 48
-#fillLoop:
-#	sb $t1 0($s0)
-#	addi $t0 $t0 1	# Increment counter
-#	addi $s0 $s0 1	# Move to next cell
-#	bne $t0 $s1 fillLoop
-#	loadAddr()
-#	jr $ra
-
-
-
 # Checks if binary number (strBinNum) is negative in sign/magnitude format
+# a0 = string
 isNegNum:
 	saveAddr()
-	la $s0 strBinNum
-	lb $v0 0($s0)
+	lb $v0 0($a0)
 	seq $v0 $v0 49	# If v0 == '1', then v0 = 1
-	loadAddr()
-	jr $ra
-
-
-
-# Prints strBinNum on one line
-displayBinArr:
-	saveAddr()
-	la $s0 strBinNum
-	lw $s1 strBinNumSize	# counter
-	#add $s0 $s0 $s1
-	#addi $s0 $s0 -1
-displayLoop:
-	lb $a0 0($s0)	# Read character from array
-	prntChar($a0)
-	addi $s0 $s0 1	# Move to next cell
-	addi $s1 $s1 -1	# Decrement counter
-	bnez $s1 displayLoop
-	prntStr(newLine)
 	loadAddr()
 	jr $ra
