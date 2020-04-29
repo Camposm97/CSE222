@@ -10,9 +10,9 @@
 	li $v0 5
 	syscall	# Integer stored in v0
 .end_macro
-.macro prmptStr(%n)	# Ask for a string with n characters
-	li $v0 8
-	li $a1 %n	# sets size of characters
+.macro prntInt(%x)
+	li $v0 1
+	move $a0 %x
 	syscall
 .end_macro
 .macro prntStr(%s)
@@ -26,16 +26,9 @@
 	syscall
 .end_macro
 
-# Checks if the character is null (a0 = character)
-#isNullChar:
-#	saveAddr()	
-#	seq $v0 $a0 0	# If a0 == '\0' then v0 = 1
-#	loadAddr()
-#	jr $ra
-	
-# Checks if the character is a new line (a0 = character)
-#isNewLineChar:
-#	saveAddr()
-#	seq $v0 $a0 10	# If a0 == '\n', then v0 = 1
-#	loadAddr()
-#	jr $ra
+.macro print(%str)
+.data 
+	s: .asciiz %str
+.text
+	prntStr(s)
+.end_macro
