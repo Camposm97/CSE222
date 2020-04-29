@@ -2,35 +2,42 @@
 .data
 strBinNum: .space 40		# 40 bytes = 40 chars
 strBinNumSize: .word 40		# Size of strBinNum
+strHeader: .asciiz "========================================[Campos_CSE222_Final_Project]========================================"
 strPrmptSignMagNum: .asciiz "Sign/Magnitude Binary Number (32-Bit): "
-strBadInput: .asciiz "Invalid input:  Fill out all 32 bits with spaces between for every 4 bits.\n"
-strInput: .asciiz ""
-strExample: .asciiz "Example: 0000 0000 0000 0000 0000 0000 0000 0000\n"
+strInvalidInput: .asciiz "Invalid input: "
+strRequirements: .asciiz "Fill out all 32 bits with spaces between for every 4 bits."
+strExample: .asciiz "Example: 0000 0000 0000 0000 0000 0000 0000 0000"
 newLine: .asciiz "\n"
 space: .asciiz " "
-line: .asciiz "================================================[Campos_CSE222_Final_Project]================================================"
 .text
 main:
-	#jal fillBinArr
+	prntlnStr(strHeader)
 	jal askForBinNum
 	la $a0 strBinNum
 	lw $a1 strBinNumSize
 	addi $a1 $a1 -1
 	jal isValidBinNum
 	beqz $v0 invalidInput
+	la $a0 strBinNum
+	lw $a1 strBinNumSize
+	jal convertToDecimal
 	#jal readBinStr
 	j terminate
 invalidInput:
-	prntStr(strBadInput)
-	prntStr(strExample)
+	prntStr(strInvalidInput)
+	prntlnStr(strBinNum)
+	prntlnStr(strRequirements)
+	prntlnStr(strExample)
+	prntStr(newLine)
 	j main
 # Exit Program
 terminate:
 	#jal displayBinArr
-	jal isNegNum
-	print("Exiting Program.")
-	li $v0 10
-	syscall
+	#jal isNegNum
+	#move $t0 $v0
+	#print("Is negative? ")
+	#prntlnInt($t0)
+	exit()
 
 # =====================================[FUNCTIONS BELOW]=====================================
 # Prompts user to enter binary number (sign/mag. format)
@@ -74,6 +81,32 @@ validBinLoop:
 	j validBinLoop
 doneValidBinLoop:
 	seq $v0 $t0 $s1	# v0 = 1 if valid binary number
+	loadAddr()
+	jr $ra
+
+
+# Takes a0 (binary string) and converts it to base 10 format
+convertToDecimal:
+	saveAddr()
+	move $s0 $a0	# s0 = string
+	move $s1 $a1	# s1 = string length
+	li $s2 0		# Sum
+	li $t0 0		# Counter
+iterate:
+	beq $t0 $s1 doneIterate
+	lb $t1 0($s0)	# Read char
+	move $a0 $t1
+	jal isSpaceChar
+	bnez $v0 contIterate
+	#prntChar($t1)
+	#prntStr(space)
+contIterate:
+	addi $s0 $s0 1	# Next char
+	addi $t0 $t0 1	# Increment counter
+	j iterate
+	
+doneIterate:	
+	prntStr(newLine)
 	loadAddr()
 	jr $ra
 
@@ -136,19 +169,19 @@ isSpaceChar:
 
 
 # Fills strBinNum with zeros
-fillBinArr:
-	saveAddr()
-	la $s0 strBinNum
-	lw $s1 strBinNumSize
-	li $t0 0	# t0 = counter
-	li $t1 48	# t1 = 48
-fillLoop:
-	sb $t1 0($s0)
-	addi $t0 $t0 1	# Increment counter
-	addi $s0 $s0 1	# Move to next cell
-	bne $t0 $s1 fillLoop
-	loadAddr()
-	jr $ra
+#fillBinArr:
+#	saveAddr()
+#	la $s0 strBinNum
+#	lw $s1 strBinNumSize
+#	li $t0 0	# t0 = counter
+#	li $t1 48	# t1 = 48
+#fillLoop:
+#	sb $t1 0($s0)
+#	addi $t0 $t0 1	# Increment counter
+#	addi $s0 $s0 1	# Move to next cell
+#	bne $t0 $s1 fillLoop
+#	loadAddr()
+#	jr $ra
 
 
 
@@ -156,10 +189,8 @@ fillLoop:
 isNegNum:
 	saveAddr()
 	la $s0 strBinNum
-	lb $t0 0($s0)
-	print("Negative? ")
-	prntChar($t0)
-	prntStr(newLine)
+	lb $v0 0($s0)
+	seq $v0 $v0 49	# If v0 == '1', then v0 = 1
 	loadAddr()
 	jr $ra
 
