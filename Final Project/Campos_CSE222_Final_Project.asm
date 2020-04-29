@@ -3,29 +3,27 @@
 strBinNum: .space 40		# 40 bytes = 40 chars
 strBinNumSize: .word 40		# Size of strBinNum
 strPrmptSignMagNum: .asciiz "Sign/Magnitude Binary Number (32-Bit): "
-strBadInput: .asciiz "Invalid input!  Fill out all 32 characters with spaces between.  \nExample: 0000 0000 0000 0000 0000 0000 0000 0000"
+strBadInput: .asciiz "Invalid input:  Fill out all 32 bits with spaces between for every 4 bits.\n"
+strInput: .asciiz ""
+strExample: .asciiz "Example: 0000 0000 0000 0000 0000 0000 0000 0000\n"
 newLine: .asciiz "\n"
 space: .asciiz " "
+line: .asciiz "================================================[Campos_CSE222_Final_Project]================================================"
 .text
 main:
-	jal fillBinArr
+	#jal fillBinArr
 	jal askForBinNum
-	#move $s7 $v0	# Save string t0 s7
-	#move $a0 $s7	# a0 = s7
 	la $a0 strBinNum
+	lw $a1 strBinNumSize
+	addi $a1 $a1 -1
 	jal isValidBinNum
 	beqz $v0 invalidInput
-	#move $t0 $v0
-	#print("Valid binary number?" )
-	#prntInt($t0)
-	prntStr(newLine)
 	#jal readBinStr
 	j terminate
 invalidInput:
 	prntStr(strBadInput)
-	prntStr(newLine)
-	
-
+	prntStr(strExample)
+	j main
 # Exit Program
 terminate:
 	#jal displayBinArr
@@ -47,11 +45,12 @@ askForBinNum: # Input: "0000 0000 0000 0000 0000 0000 0000 0000"
 
 # Checks format of string
 # a0 = string
+# a1 = length of string
 # Return 1 if valid
 isValidBinNum:
 	saveAddr()
 	move $s0 $a0		# s0 = string
-	lw $s1 strBinNumSize	# s1 = 40 (length of string)
+	move $s1 $a1		# s1 = string length
 	li $t0 0			# Counter
 validBinLoop:
 	beq $t0 $s1 doneValidBinLoop
@@ -60,8 +59,9 @@ validBinLoop:
 	jal isBinChar
 	move $v1 $v0	# v1 = v0
 	jal isSpaceChar
-	or $t2 $v0 $v1	# v0 = v0 OR v1
-	beqz $t2 doneValidBinLoop
+	or $v0 $v0 $v1	# v0 = v0 OR v1
+	beqz $v0 doneValidBinLoop
+	
 	#prntChar($t1)
 	#prntStr(space)
 	#prntInt($t2)
