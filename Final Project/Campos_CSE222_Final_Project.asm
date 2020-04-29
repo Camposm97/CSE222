@@ -3,7 +3,7 @@
 strBinNum: .space 40		# 40 bytes = 40 chars
 strBinNumSize: .word 40		# Size of strBinNum
 strHeader: .asciiz "========================================[Campos_CSE222_Final_Project]========================================"
-strPrmptSignMagNum: .asciiz "Sign/Magnitude Binary Number (32-Bit): "
+strPrmptSignMagNum: .asciiz "32-Bit Sign/Magnitude Binary Number: "
 strInvalidInput: .asciiz "Invalid input: "
 strRequirements: .asciiz "Fill out all 32 bits with spaces between for every 4 bits."
 strExample: .asciiz "Example: 0000 0000 0000 0000 0000 0000 0000 0000"
@@ -15,30 +15,29 @@ main:
 	jal askForBinNum	# Prompt user for signed binary number
 	la $a0 strBinNum	# Set up arguments
 	lw $a1 strBinNumSize
-	jal isValidBinNum
+	jal isValidBinNum	# Check if entered string is valid
 	beqz $v0 invalidInput
 	la $a0 strBinNum
 	lw $a1 strBinNumSize
 	jal convertToDecimal
 	j terminate
-invalidInput:
+invalidInput:	# String is invalid, re-prompt user
 	prntStr(strInvalidInput)
 	prntlnStr(strBinNum)
 	prntlnStr(strRequirements)
 	prntlnStr(strExample)
 	prntStr(newLine)
 	j main
-# Exit Program
-terminate:
+terminate:	# Exit Program
 	exit()
 
 # =====================================[FUNCTIONS BELOW]=====================================
 # Prompts user to enter binary number (sign/mag. format)
-askForBinNum: # Input: "0000 0000 0000 0000 0000 0000 0000 0000"
+askForBinNum: # Input Example: "0000 0000 0000 0000 0000 0000 0000 0000"
 	prntStr(strPrmptSignMagNum)
-	li $v0 8		# Prompt string
+	li $v0 8			# Prompt string
 	la $a0 strBinNum	# Store result -> strBinNum
-	li $a1 40		# 40 characters allowed
+	li $a1 40			# 40 character limit
 	syscall
 	prntStr(newLine)
 	jr $ra
@@ -129,7 +128,7 @@ isBinChar:
 	saveAddr()
 	seq $t8 $a0 48	# If a0 == '0', then t8 = 1
 	seq $t9 $a0 49	# If a0 == '1', then t9 = 1
-	or $v0 $t8 $t9	# v0 = t8 + t9
+	or $v0 $t8 $t9	# v0 = t8 OR t9
 	loadAddr()
 	jr $ra
 
@@ -137,7 +136,7 @@ isBinChar:
 # Return value in v0
 isSpaceChar:
 	saveAddr()
-	seq $v0 $a0 32
+	seq $v0 $a0 32	# If a0 == ' ', then v0 = 1
 	loadAddr()
 	jr $ra
 
@@ -145,7 +144,7 @@ isSpaceChar:
 # a0 = string
 isNegNum:
 	saveAddr()
-	lb $v0 0($a0)
+	lb $v0 0($a0)	# Read first char of string (msb)
 	seq $v0 $v0 49	# If v0 == '1', then v0 = 1
 	loadAddr()
 	jr $ra
