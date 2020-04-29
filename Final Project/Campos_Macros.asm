@@ -24,22 +24,8 @@
 	prntStr(%s)
 	prntStr(newLine)
 .end_macro
-.macro prntChar(%c)
-	li $v0 11
-	move $a0 %c
-	syscall
-.end_macro
-.macro print(%str)
-.data 
-	s: .asciiz %str
-.text
-	prntStr(s)
-.end_macro
-.macro println(%str)
-	print(%str)
-	prntStr(newLine)
-.end_macro
-.macro exit()
-	li $v0 10
+.macro prntIntAsBin(%x)
+	li $v0 35
+	move $a0 %x
 	syscall
 .end_macro
