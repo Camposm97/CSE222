@@ -12,10 +12,9 @@ space: .asciiz " "
 .text
 main:
 	prntlnStr(strHeader)
-	jal askForBinNum
-	la $a0 strBinNum
+	jal askForBinNum	# Prompt user for signed binary number
+	la $a0 strBinNum	# Set up arguments
 	lw $a1 strBinNumSize
-	addi $a1 $a1 -1
 	jal isValidBinNum
 	beqz $v0 invalidInput
 	la $a0 strBinNum
@@ -52,23 +51,17 @@ isValidBinNum:
 	saveAddr()
 	move $s0 $a0		# s0 = string
 	move $s1 $a1		# s1 = string length
-	li $t0 0			# Counter
+	addi $s1 $s1 -1		# Decrement string length to avoid NUL char at the end
+	li $t0 0			# t0 = counter
 validBinLoop:
 	beq $t0 $s1 doneValidBinLoop
 	lb $t1 0($s0)	# Read character
-	move $a0 $t1
-	jal isBinChar
+	move $a0 $t1	# Set a0 = t1
+	jal isBinChar	# Check if is 1 or 0
 	move $v1 $v0	# v1 = v0
-	jal isSpaceChar
+	jal isSpaceChar	# Check if is space char
 	or $v0 $v0 $v1	# v0 = v0 OR v1
 	beqz $v0 doneValidBinLoop
-	
-	#prntChar($t1)
-	#prntStr(space)
-	#prntInt($t2)
-	#prntStr(space)
-	#prntInt($t0)
-	#prntStr(newLine)
 	
 	addi $t0 $t0 1	# Increment counter
 	addi $s0 $s0 1	# Next Character
