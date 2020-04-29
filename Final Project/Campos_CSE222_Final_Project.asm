@@ -21,7 +21,6 @@ main:
 	la $a0 strBinNum
 	lw $a1 strBinNumSize
 	jal convertToDecimal
-	#jal readBinStr
 	j terminate
 invalidInput:
 	prntStr(strInvalidInput)
@@ -32,11 +31,6 @@ invalidInput:
 	j main
 # Exit Program
 terminate:
-	#jal displayBinArr
-	#jal isNegNum
-	#move $t0 $v0
-	#print("Is negative? ")
-	#prntlnInt($t0)
 	exit()
 
 # =====================================[FUNCTIONS BELOW]=====================================
@@ -84,15 +78,13 @@ doneValidBinLoop:
 	loadAddr()
 	jr $ra
 
-
-
 # Takes a0 (binary string) and converts it to base 10 format
 # a1 = length of string
 convertToDecimal:
 	saveAddr()
 	move $s0 $a0	# Store string in s0
 	move $s1 $a1	# Store length of string in s1
-	addi $s1 $s1 -1	# Decrement length of string by 1 (So we avoid the NUL char)
+	#addi $s1 $s1 -1	# Decrement length of string by 1 (So we avoid the NUL char)
 	li $s2 0		# This will hold the sum for computing value of the binary number in decimal
 	li $s3 30		# Bit Counter
 	li $t0 0		# Counter
@@ -118,7 +110,7 @@ iterate:
 	sllv $t4 $t3 $s3	# t4 = t3 << s3
 	
 	prntInt($t1)	# Print parsed int
-	prntStr(" * ")
+	print(" * ")
 	prntlnInt($t4)	# Print power
 	
 	mult $t1 $t4	# LO = t1 * t4
@@ -138,9 +130,6 @@ doneIterate:
 	loadAddr()
 	jr $ra
 
-
-
-
 # Checks if a0 is a '1' or '0'
 # Return value in v0
 isBinChar:
@@ -150,8 +139,6 @@ isBinChar:
 	or $v0 $t8 $t9	# v0 = t8 + t9
 	loadAddr()
 	jr $ra
-
-
 
 # Checks if a0 is a space
 # Return value in v0
