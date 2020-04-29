@@ -1,41 +1,48 @@
 .include "Campos_Macros.asm"
 .data
-binArr: .space 32		# 32 bytes = 32 characters
-binArrSize: .word 32	# Size of binArr
-strPrmptSignMagNum: .asciiz "Your sign/magnitude binary number (32-Bit): "
+strBinNum: .space 40		# 40 bytes = 40 chars
+strBinNumSize: .word 40		# Size of strBinNum
+strPrmptSignMagNum: .asciiz "Sign/Magnitude Binary Number (32-Bit): "
+strBadInput: .asciiz "Invalid input!  Fill out all 32 characters with spaces between.  \nExample: 0000 0000 0000 0000 0000 0000 0000 0000"
 newLine: .asciiz "\n"
 space: .asciiz " "
 .text
 main:
 	jal fillBinArr
 	jal askForBinNum
-	move $s7 $v0	# Save string t0 s7
-	move $a0 $s7	# a0 = s7
+	#move $s7 $v0	# Save string t0 s7
+	#move $a0 $s7	# a0 = s7
+	la $a0 strBinNum
 	jal isValidBinNum
-	beqz $v0 terminate
+	beqz $v0 invalidInput
 	#move $t0 $v0
 	#print("Valid binary number?" )
 	#prntInt($t0)
 	prntStr(newLine)
 	#jal readBinStr
+	j terminate
+invalidInput:
+	prntStr(strBadInput)
+	prntStr(newLine)
+	
+
 # Exit Program
 terminate:
 	#jal displayBinArr
 	jal isNegNum
+	print("Exiting Program.")
 	li $v0 10
 	syscall
 
 # =====================================[FUNCTIONS BELOW]=====================================
 # Prompts user to enter binary number (sign/mag. format)
-# Returns string
 askForBinNum: # Input: "0000 0000 0000 0000 0000 0000 0000 0000"
 	prntStr(strPrmptSignMagNum)
-	li $v0 8
-	la $a0 binArr
-	prmptStr(40)	# Prompt string
-	move $s0 $a0	# Move string to s0
+	li $v0 8		# Prompt string
+	la $a0 strBinNum	# Store result -> strBinNum
+	li $a1 40		# 40 characters allowed
+	syscall
 	prntStr(newLine)
-	move $v0 $s0	# v0 = s0
 	jr $ra
 
 # Checks format of string
@@ -43,9 +50,9 @@ askForBinNum: # Input: "0000 0000 0000 0000 0000 0000 0000 0000"
 # Return 1 if valid
 isValidBinNum:
 	saveAddr()
-	move $s0 $a0	# s0 = a0
-	li $s1 40		# s1 = 40 (length of string)
-	li $t0 0		# Counter
+	move $s0 $a0		# s0 = string
+	lw $s1 strBinNumSize	# s1 = 40 (length of string)
+	li $t0 0			# Counter
 validBinLoop:
 	beq $t0 $s1 doneValidBinLoop
 	lb $t1 0($s0)	# Read character
@@ -73,13 +80,13 @@ doneValidBinLoop:
 
 
 # Reads the entered string (sign/mag binary number)
-# Stores string in binArr, if string isn't all 1s or 0s then the function will return a 0
+# Stores string in strBinNum, if string isn't all 1s or 0s then the function will return a 0
 # a0 = entered string
 readBinStr:
 	saveAddr()
 	move $s0 $a0	# s0 = entered string
-	la $s1 binArr	# Load address of binArr
-	lw $s2 binArrSize	# Load size of binArr
+	la $s1 strBinNum	# Load address of strBinNum
+	lw $s2 strBinNumSize	# Load size of strBinNum
 	li $t0 0		# t0 = 0 (counter)
 readStrLoop:
 	beq $t0 $s2 doneReadStr	# If t0 == s2, then jump
@@ -89,13 +96,13 @@ readStrLoop:
 	jal isBinChar
 	beqz $v0 doneReadStr	# If v0 == 0, then jump to done
 	
-	sb $a0 0($s1)		# Save character to binArr
+	sb $a0 0($s1)		# Save character to strBinNum
 	prntChar($a0)
 	#prntStr(space)
 	
 	addi $t0 $t0 1	# Increment counter
 	addi $s0 $s0 1	# Move to next cell in the array
-	addi $s1 $s1 1	# Move to next cell of the binArr
+	addi $s1 $s1 1	# Move to next cell of the strBinNum
 	j readStrLoop
 doneReadStr:
 	prntStr(newLine)
@@ -128,11 +135,11 @@ isSpaceChar:
 
 
 
-# Fills binArr with zeros
+# Fills strBinNum with zeros
 fillBinArr:
 	saveAddr()
-	la $s0 binArr
-	lw $s1 binArrSize
+	la $s0 strBinNum
+	lw $s1 strBinNumSize
 	li $t0 0	# t0 = counter
 	li $t1 48	# t1 = 48
 fillLoop:
@@ -145,10 +152,10 @@ fillLoop:
 
 
 
-# Checks if binary number (binArr) is negative in sign/magnitude format
+# Checks if binary number (strBinNum) is negative in sign/magnitude format
 isNegNum:
 	saveAddr()
-	la $s0 binArr
+	la $s0 strBinNum
 	lb $t0 0($s0)
 	print("Negative? ")
 	prntChar($t0)
@@ -158,11 +165,11 @@ isNegNum:
 
 
 
-# Prints binArr on one line
+# Prints strBinNum on one line
 displayBinArr:
 	saveAddr()
-	la $s0 binArr
-	lw $s1 binArrSize	# counter
+	la $s0 strBinNum
+	lw $s1 strBinNumSize	# counter
 	#add $s0 $s0 $s1
 	#addi $s0 $s0 -1
 displayLoop:
