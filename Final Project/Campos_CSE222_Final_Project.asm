@@ -112,7 +112,7 @@ convertBinStrToDecimal:
 	move $s1 $a1	# Store length of string in s1
 	addi $s1 $s1 -1	# Decrement length of string by 1 (avoids the NUL char)
 	li $s2 0		# This will hold the RESULT for computing value of the binary numbers in decimal
-	li $s3 30		# Bit Counter (Used for shifitng powers of 2)
+	li $s3 30		# Bit Counter (Used for shifting)
 	li $t0 0		# Counter
 	li $t1 0		# For storing read chars
 	li $t2 1		# Most significant bit (msb = -1 or 1)
