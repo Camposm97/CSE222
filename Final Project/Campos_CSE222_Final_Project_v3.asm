@@ -28,9 +28,12 @@ main:
 	
 	beqz $t0 returnInput	# If t0 == '0', returnInput
 startConverting:	# Else start conversion to two's comp
-	li $v0 4
+	li $v0 4	# Print output
 	la $a0 stringOutput
 	syscall
+	
+	jal flipBits
+	
 	j done
 returnInput:
 	li $v0 4
@@ -60,3 +63,7 @@ displayDone:
 	la $a0 newLine
 	syscall
 	jr $ra
+	
+flipBits:	# Flips all the bits in input except the msb
+	
+
